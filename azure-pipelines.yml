@@ -3,36 +3,51 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+# Trigger the pipeline on pushes to the main branch
 trigger:
 - main
 
+# Use a Microsoft-hosted agent VM image
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest' # Or 'windows-latest' if your App Service OS is Windows
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  buildConfiguration: 'Release' # Standard build configuration
+  # --- Azure App Service Details ---
+  # Replace with the exact name of your Azure App Service
+  azureAppName: 'myservice75' # <-- Replace with your App Service name (e.g., 'edusync-backend-api')
+  # ---------------------------------
 
+# Define the steps (tasks) for the pipeline
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: 'sdk'
+    version: '8.x' # Specify the .NET SDK version used by your project (e.g., 8.x)
+  displayName: 'Install .NET SDK'
 
-- task: VSBuild@1
+- script: dotnet restore
+  displayName: 'Restore Dependencies'
+
+- script: dotnet build --configuration $(buildConfiguration) --no-restore
+  displayName: 'Build .NET Project'
+
+#- script: dotnet test --no-build --verbosity normal # Uncomment if you have unit tests
+#  displayName: 'Run Tests'
+
+- script: dotnet publish -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory) --no-build
+  displayName: 'Publish .NET Project'
+
+- task: AzureWebApp@1
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
+    # --- Azure Deployment Details ---
+    azureSubscription: 'connectionstring' # <-- Ensure this matches your Service Connection Name
+    appType: 'webApp' # or 'webAppLinux' if your App Service OS is Linux
+    appName: '$(azureAppName)' # Uses the variable defined above
+    package: '$(Build.ArtifactStagingDirectory)' # Deploys the published output
+    # --------------------------------
+  displayName: 'Deploy to Azure App Service'
+  
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
