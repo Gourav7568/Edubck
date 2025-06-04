@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using SampleProject.Data;
 using SampleProject.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Define CORS policy
@@ -32,6 +33,8 @@ builder.Services.AddSwaggerGen(c =>
     
 
 });
+builder.Services.AddApplicationInsightsTelemetry();
+
 
 var app = builder.Build();
 
