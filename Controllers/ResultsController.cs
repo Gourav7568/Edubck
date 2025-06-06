@@ -79,12 +79,15 @@ namespace SampleProject.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbEx)
             {
-                if (ResultExists(result.ResultId))
-                    return Conflict();
-                else
-                    throw;
+                Console.WriteLine("❌ DbUpdateException: " + dbEx.InnerException?.Message ?? dbEx.Message);
+                return StatusCode(500, "Database update error: " + dbEx.InnerException?.Message ?? dbEx.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ General Exception: " + ex.Message);
+                return StatusCode(500, "Server error: " + ex.Message);
             }
 
             var getDto = new GetResultDTO
@@ -98,6 +101,7 @@ namespace SampleProject.Controllers
 
             return CreatedAtAction(nameof(GetResult), new { id = result.ResultId }, getDto);
         }
+
 
         // PUT: api/Results/{id}
         [HttpPut("{id}")]
