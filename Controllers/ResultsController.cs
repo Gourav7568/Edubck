@@ -150,16 +150,18 @@ namespace SampleProject.Controllers
             return NoContent();
         }
 
-        private bool ResultExists(Guid id)
-        {
-            return _context.Results.Any(e => e.ResultId == id);
-        }
+       
 
         [HttpPost("submit")]
         public async Task<IActionResult> SubmitResult([FromBody] CreateResultDTO result)
         {
             await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
             return Ok("Event sent!");
+        }
+
+        private bool ResultExists(Guid id)
+        {
+            return _context.Results.Any(e => e.ResultId == id);
         }
 
     }
