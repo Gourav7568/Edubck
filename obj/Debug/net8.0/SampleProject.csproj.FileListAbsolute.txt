@@ -296,3 +296,6 @@ D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug
 D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\Microsoft.Extensions.Logging.ApplicationInsights.dll
 D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\System.Diagnostics.PerformanceCounter.dll
 D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Diagnostics.PerformanceCounter.dll
+D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\Azure.Core.Amqp.dll
+D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\Azure.Messaging.EventHubs.dll
+D:\FinalEduSync\FinalEduSync\Final_backend\Final_backend\SampleProject\bin\Debug\net8.0\Microsoft.Azure.Amqp.dll
