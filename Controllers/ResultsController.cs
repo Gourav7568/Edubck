@@ -156,15 +156,15 @@ namespace SampleProject.Controllers
         public async Task<IActionResult> SubmitResult([FromBody] CreateResultDTO result)
         {
             try
-            {
-                await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
-                return Ok("Event sent!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
-                return StatusCode(500, "Failed to send event: " + ex.Message);
-            }
+    {
+        await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
+        return Ok("Event sent!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
+        return StatusCode(500, "Failed to send event: " + ex.Message);
+    }
         }
 
         private bool ResultExists(Guid id)
