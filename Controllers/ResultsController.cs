@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SampleProject.Data;
 using SampleProject.Models;
 using SampleProject.DTOs;
+using SampleProject.Services;
 
 namespace SampleProject.Controllers
 {
@@ -15,11 +16,14 @@ namespace SampleProject.Controllers
     public class ResultsController : ControllerBase
     {
         private readonly EduSyncContext _context;
+        private readonly EventHubService _eventHubService;
 
-        public ResultsController(EduSyncContext context)
+        public ResultsController(EduSyncContext context, EventHubService eventHubService)
         {
             _context = context;
+            _eventHubService = eventHubService;
         }
+
 
         // GET: api/Results
         [HttpGet]
@@ -146,9 +150,27 @@ namespace SampleProject.Controllers
             return NoContent();
         }
 
+       
+
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitResult([FromBody] CreateResultDTO result)
+        {
+            try
+            {
+                await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
+                return Ok("Event sent!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
+                return StatusCode(500, "Failed to send event: " + ex.Message);
+            }
+        }
+
         private bool ResultExists(Guid id)
         {
             return _context.Results.Any(e => e.ResultId == id);
         }
+
     }
 }
