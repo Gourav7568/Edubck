@@ -82,6 +82,8 @@ namespace SampleProject.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                // 🔄 Send event after saving
+               await _eventHubService.SendEventAsync(dto, "QuizResultSubmitted");
             }
             catch (DbUpdateException dbEx)
             {
@@ -149,25 +151,6 @@ namespace SampleProject.Controllers
 
             return NoContent();
         }
-
-
-
-        [HttpPost("submit")]
-        public async Task<IActionResult> SubmitFullResult([FromBody] EventResultDTO result)
-        {
-            try
-            {
-                result.ResultId = Guid.NewGuid();
-                await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
-                return Ok("Event sent with full payload!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
-                return StatusCode(500, "Failed to send event: " + ex.Message);
-            }
-        }
-
 
         private bool ResultExists(Guid id)
         {
