@@ -150,22 +150,24 @@ namespace SampleProject.Controllers
             return NoContent();
         }
 
-       
+
 
         [HttpPost("submit")]
-        public async Task<IActionResult> SubmitResult([FromBody] CreateResultDTO result)
+        public async Task<IActionResult> SubmitFullResult([FromBody] EventResultDTO result)
         {
             try
-    {
-        await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
-        return Ok("Event sent!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
-        return StatusCode(500, "Failed to send event: " + ex.Message);
-    }
+            {
+                result.ResultId = Guid.NewGuid();
+                await _eventHubService.SendEventAsync(result, "QuizResultSubmitted");
+                return Ok("Event sent with full payload!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ EventHub Send Error: " + ex.Message);
+                return StatusCode(500, "Failed to send event: " + ex.Message);
+            }
         }
+
 
         private bool ResultExists(Guid id)
         {
